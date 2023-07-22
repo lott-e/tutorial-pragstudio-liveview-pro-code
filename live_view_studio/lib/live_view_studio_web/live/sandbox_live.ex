@@ -1,7 +1,7 @@
 defmodule LiveViewStudioWeb.SandboxLive do
   use LiveViewStudioWeb, :live_view
   import Number.Currency
-  alias LiveViewStudioWeb.Sandbox
+  alias LiveViewStudio.Sandbox
   # alias LiveViewStudioWeb.Sandbox
 
   def mount(_params, _session, socket) do
