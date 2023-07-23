@@ -16,19 +16,36 @@ defmodule LiveViewStudioWeb.ServersLive do
     {:ok, socket}
   end
 
+  def handle_params(%{"id" => id}, _uri, socket) do
+    server = Servers.get_server!(id)
+    {:noreply, assign(socket, selected_server: server, page_title: server.name) }
+  end
+
+  # handle for no id in url
+  # hd( is first in list of our servers, meaning on hitting /servers the first one will be selected
+  def handle_params(_, _uri, socket) do
+    {:noreply, assign(socket, selected_server: hd(socket.assigns.servers)) }
+  end
+
+
+
+  # ~p verifies route exists
+  # using  href={~p"/servers?#{[id: server.id]}"} would reload whole page so use patch instead
+  # will publish updates through the established websocket rather than sending http req
   def render(assigns) do
     ~H"""
     <h1>Servers</h1>
     <div id="servers">
       <div class="sidebar">
         <div class="nav">
-          <a
+          <.link
+            patch={~p"/servers?#{[id: server.id]}"}
             :for={server <- @servers}
             class={if server == @selected_server, do: "selected"}
           >
             <span class={server.status}></span>
             <%= server.name %>
-          </a>
+          </.link>
         </div>
         <div class="coffees">
           <button phx-click="drink">
@@ -64,7 +81,11 @@ defmodule LiveViewStudioWeb.ServersLive do
               </blockquote>
             </div>
           </div>
-          <div class="links"></div>
+          <div class="links">
+           <.link navigate={~p"/light"}>
+            Adjust Lights
+           </.link>
+          </div>
         </div>
       </div>
     </div>
