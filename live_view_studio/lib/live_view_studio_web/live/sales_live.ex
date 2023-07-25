@@ -9,6 +9,7 @@ defmodule LiveViewStudioWeb.SalesLive do
       :timer.send_interval(1500, self(), :sales)
       :timer.send_interval(10000, self(), :satisfaction)
     end
+
     {:ok, assign_stats(socket)}
   end
 
@@ -65,18 +66,16 @@ defmodule LiveViewStudioWeb.SalesLive do
     {:noreply, assign(socket, satisfaction: satisfaction)}
   end
 
-
   def handle_event("refresh", _, socket) do
     # refresh page
     {:noreply, assign_stats(socket)}
   end
 
   defp assign_stats(socket) do
-    socket =
-      assign(socket,
-        new_orders: Sales.new_orders(),
-        sales_amount: Sales.sales_amount(),
-        satisfaction: Sales.satisfaction()
-      )
+    assign(socket,
+      new_orders: Sales.new_orders(),
+      sales_amount: Sales.sales_amount(),
+      satisfaction: Sales.satisfaction()
+    )
   end
 end
