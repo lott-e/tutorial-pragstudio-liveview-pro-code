@@ -12,7 +12,7 @@ defmodule LiveViewStudioWeb.DonationsLive do
     sort_order = (params["sort_order"] || "asc") |> String.to_atom()
 
     page = (params["page"] || "1") |> String.to_integer()
-    per_page = (params["per_page"] || "5") |> String.to_integer()
+    per_page = (params["per_page"] || "17") |> String.to_integer()
 
     options = %{
       sort_by: sort_by,
@@ -32,11 +32,18 @@ defmodule LiveViewStudioWeb.DonationsLive do
     {:noreply, socket}
   end
 
+  # update the map like this @options |
   def sort_link(assigns) do
+    params = %{
+      assigns.options
+      | sort_by: assigns.sort_by,
+        sort_order: next_sort_order(assigns.options.sort_order)
+    }
+
+    assigns = assign(assigns, params: params)
+
     ~H"""
-    <.link patch={
-      ~p"/donations?#{%{sort_by: @sort_by, sort_order: next_sort_order(@options.sort_order)}}"
-    }>
+    <.link patch={~p"/donations?#{@params}"}>
       <%= render_slot(@inner_block) %>
     </.link>
     """
@@ -47,5 +54,11 @@ defmodule LiveViewStudioWeb.DonationsLive do
       :asc -> :desc
       :desc -> :asc
     end
+  end
+
+  def handle_event("select-per-page", %{"per-page" => per_page}, socket) do
+    params = %{socket.assigns.options | per_page: per_page}
+    socket = push_patch(socket, to: ~p"/donations?#{params}")
+    {:noreply, socket}
   end
 end

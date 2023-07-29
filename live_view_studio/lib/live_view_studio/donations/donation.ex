@@ -7,7 +7,6 @@ defmodule LiveViewStudio.Donations.Donation do
     field :emoji, :string
     field :quantity, :integer
     field :days_until_expires, :integer
-
     timestamps()
   end
 
